@@ -1,6 +1,8 @@
 # laravel-admin-alioss
 
-Laravel admin 框架的七牛 alioss 多图上传扩展，可拖拽，异步上传图片，支持删除
+Laravel admin 框架的阿里 alioss 多图上传扩展，可拖拽，异步上传图片，支持删除
+
+[七牛版本点击此处](https://github.com/hanson/laravel-admin-qiniu)
 
 ![1_7M_G0VFANP6HK48EEL2QO.png](https://i.loli.net/2020/02/09/Hys9IGfjWloc8Fm.png)
 
@@ -49,7 +51,7 @@ $form->aliossImages('column', '商品图')->sortable(); // 普通用法
 $form->aliossImages('column', '商品图')
     ->sortable() // 让图片可以拖拽排序
     ->extraData(['disk' => 'alioss2', 'path' => 'avatar']) // 假如你有多个七牛配置，可以通过指定此处的 disk 进行上传， path 为文件路径的前缀
-    ->value(['http://url.com/a.jpg', 'http://url.com/b.jpg']); // 默认显示的图片数组，必须为 url
+    ->default(['http://url.com/a.jpg', 'http://url.com/b.jpg']); // 默认显示的图片数组，必须为 url
 
 $form->saving(function (\Encore\Admin\Form $form) {
     $paths = \Hanson\LaravelAdminAlioss\Alioss::getPaths(request('alioss_column')); // 需要 alioss_ 作为前缀的字段
