@@ -1,14 +1,14 @@
 <?php
 
 
-namespace Hanson\LaravelAdminQiniu\Http\Controllers;
+namespace Hanson\LaravelAdminAlioss\Http\Controllers;
 
 
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-class QiniuController extends Controller
+class AliossController extends Controller
 {
     public function upload()
     {
@@ -20,11 +20,7 @@ class QiniuController extends Controller
 
         $file = array_values($file)[0][0];
 
-        $disk = request('disk', 'qiniu');
-
-        $domain = config('filesystems.disks.'.$disk.'.domain');
-
-        $domain = Str::endsWith($domain, '/') ? $domain : $domain . '/';
+        $disk = request('disk', 'oss');
 
         try {
             $path = Storage::disk($disk)->put(request('path', ''), $file);
@@ -32,12 +28,20 @@ class QiniuController extends Controller
             return ['error' => '网络错误，错误信息：'.$exception->getMessage()];
         }
 
+        if (config('filesystems.disks.'.$disk.'.isCName')) {
+            $domain = config('filesystems.disks.'.$disk.'.cdnDomain');
+        } else {
+            $domain = config('filesystems.disks.'.$disk.'.endpoint');
+        }
+
+        $domain = Str::endsWith($domain, '/') ? $domain : $domain . '/';
+
         return [
             'initialPreview' => [
                 "$domain$path"
             ],
             'initialPreviewConfig' => [
-                ['caption' => $file->getClientOriginalName(), 'size' => $file->getSize(), 'width' => '120px', 'url' => "/admin/qiniu/delete", 'key' => $path],
+                ['caption' => $file->getClientOriginalName(), 'size' => $file->getSize(), 'width' => '120px', 'url' => "/admin/alioss/delete", 'key' => $path],
             ],
             'append' => true // 是否把这些配置加入`initialPreview`。
         ];

@@ -1,14 +1,15 @@
 <?php
 
 
-namespace Hanson\LaravelAdminQiniu;
+namespace Hanson\LaravelAdminAlioss;
 
 
+use Encore\Admin\Form\Field;
 use Encore\Admin\Form\Field\MultipleFile;
 
-class QiniuImages extends MultipleFile
+class AliossImages extends MultipleFile
 {
-    protected $view = 'qiniu::qiniuimage';
+    protected $view = 'alioss::aliossimage';
 
     protected $rules = 'image';
 
@@ -17,6 +18,8 @@ class QiniuImages extends MultipleFile
      */
     public function setupDefaultOptions()
     {
+        $this->value = $this->default;
+
         parent::setupDefaultOptions();
 
         $this->options['uploadLabel'] = '上传';
@@ -26,8 +29,9 @@ class QiniuImages extends MultipleFile
         $this->options['fileActionSettings']['showRemove'] = true; // 允许单个图片删除
         $this->options['uploadExtraData']['_token'] = csrf_token();
         $this->options['deleteExtraData']['_token'] = csrf_token();
-        $this->options['deleteUrl'] = '/admin/qiniu/delete';
-        $this->options['uploadUrl'] = '/admin/qiniu/upload';
+        $this->options['deleteUrl'] = '/admin/alioss/delete';
+        $this->options['uploadUrl'] = '/admin/alioss/upload';
+        $this->options['allowedFileTypes'] = ['image'];
     }
 
     /**
@@ -89,23 +93,23 @@ $("input{$this->getElementClassSelector()}").on('filesorted', function(event, pa
         order += item.key + ","
     });
     
-    $("input.qiniu_{$this->formatName($this->column)}").val(order)
+    $("input.alioss_{$this->formatName($this->column)}").val(order)
 });
 EOT;
         }
 
-        $keys = collect($this->options['initialPreviewConfig'])->map(function ($item) {
+        $keys = collect($this->options['initialPreviewConfig'] ?? [])->map(function ($item) {
             return $item['key'];
         })->implode(',');
 
         $this->script .= <<<EOT
 $("input{$this->getElementClassSelector()}").on('fileuploaded', function(event, data, previewId, index) {
   var key = data.response.initialPreviewConfig[0].key;
-    var value = $("input.qiniu_{$this->formatName($this->column)}").val()
+    var value = $("input.alioss_{$this->formatName($this->column)}").val()
     
-    $("input.qiniu_{$this->formatName($this->column)}").val(value+","+key);
+    $("input.alioss_{$this->formatName($this->column)}").val(value+","+key);
 });
-$("input.qiniu_{$this->formatName($this->column)}").val("{$keys}");
+$("input.alioss_{$this->formatName($this->column)}").val("{$keys}");
 EOT;
     }
 
@@ -149,6 +153,24 @@ EOT;
             foreach ($value as $url) {
                 $key = substr(parse_url($url)['path'], 1);
                 $this->value[$key] = $url;
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * 为了让 value 传值纯为 URL，这里需要修改 key 值 为 path
+     *
+     * @param null $value
+     * @return $this|mixed
+     */
+    public function default($value) :Field
+    {
+        if (is_array($value)) {
+            foreach ($value as $url) {
+                $key = substr(parse_url($url)['path'], 1);
+                $this->default[$key] = $url;
             }
         }
 

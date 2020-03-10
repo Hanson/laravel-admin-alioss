@@ -1,12 +1,12 @@
 <?php
 
 
-namespace Hanson\LaravelAdminQiniu;
+namespace Hanson\LaravelAdminAlioss;
 
 
 use Encore\Admin\Extension;
 
-class Qiniu extends Extension
+class Alioss extends Extension
 {
     public $views = __DIR__ . '/../resources/views';
 
