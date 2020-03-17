@@ -43,6 +43,12 @@ class AliossImages extends MultipleFile
     {
         $this->script = <<<EOT
 $("input{$this->getElementClassSelector()}").fileinput({$options});
+$("input{$this->getElementClassSelector()}").on('filepredelete', function(event, key) {
+    console.log('Key = ' + key);
+    var files = $("input.alioss_{$this->formatName($this->column)}").val()
+    files = files.replace(key,'');
+    var files = $("input.alioss_{$this->formatName($this->column)}").val(files)
+});
 EOT;
 
         if ($this->fileActionSettings['showRemove']) {
@@ -151,7 +157,7 @@ EOT;
 
         if (is_array($value)) {
             foreach ($value as $url) {
-                $this->value[$url] = $url;
+                $this->default[$url] = $url;
             }
         }
 

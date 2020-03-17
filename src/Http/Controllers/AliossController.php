@@ -41,7 +41,7 @@ class AliossController extends Controller
                 "$domain$path"
             ],
             'initialPreviewConfig' => [
-                ['caption' => $file->getClientOriginalName(), 'size' => $file->getSize(), 'width' => '120px', 'url' => "/admin/alioss/delete", 'key' => $path],
+                ['caption' => $file->getClientOriginalName(), 'size' => $file->getSize(), 'width' => '120px', 'url' => "/admin/alioss/delete", 'key' => "$domain$path"],
             ],
             'append' => true // 是否把这些配置加入`initialPreview`。
         ];
@@ -49,6 +49,6 @@ class AliossController extends Controller
 
     public function delete()
     {
-        return ['has_delete' => Storage::disk(request('disk'))->delete(request('key'))];
+        return ['has_delete' => true];
     }
 }
