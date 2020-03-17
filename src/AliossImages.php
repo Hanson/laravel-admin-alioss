@@ -168,8 +168,7 @@ EOT;
     {
         if (is_array($value)) {
             foreach ($value as $url) {
-                $key = substr(parse_url($url)['path'], 1);
-                $this->default[$key] = $url;
+                $this->default[$url] = $url;
             }
         }
 
